@@ -1,7 +1,10 @@
-from app import db
+'''this script models the database at a high levelusing classes'''
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+from app import db
 
 class User(db.Model):
+    '''class to model the user in the database'''
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(64), index = True, unique = True)
     email = db.Column(db.String(120), index = True, unique = True)
@@ -11,7 +14,16 @@ class User(db.Model):
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
+    def set_password(self, password):
+        '''function to hash passwords'''
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        '''function to check hashed password and return a true or false'''
+        return check_password_hash(self.password_hash, password)
+
 class Post(db.Model):
+    '''class to model posts in the database'''
     id = db.Column(db.Integer, primary_key = True)
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
@@ -19,3 +31,4 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
+        
