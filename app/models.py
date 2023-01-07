@@ -1,9 +1,14 @@
-'''this script models the database at a high levelusing classes'''
+'''this script models the database at a high level using classes'''
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db
+from flask_login import UserMixin
+from app import db, login
 
-class User(db.Model):
+@login.user_loader #user loader that can be called by flask-login to load a user given the id
+def load_user(userid):
+    return User.query.get(int(userid))
+
+class User(UserMixin, db.Model):
     '''class to model the user in the database'''
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(64), index = True, unique = True)
@@ -31,4 +36,3 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
-        
