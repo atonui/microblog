@@ -1,8 +1,6 @@
 '''this script handles the various web forms in this app'''
 from flask_wtf import FlaskForm
-from flask import Flask
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-#from wtforms.validators import DataRequired
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
 from wtforms import validators
 from app.models import User
 
@@ -27,10 +25,17 @@ class RegistrationForm(FlaskForm):
         '''this function validates the registered username'''
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
-            raise validators.ValidationError('Please use a different email username.')
+            raise validators.ValidationError('Please use a different username.')
 
     def validate_email(self, email):
         '''this function validates the registered email'''
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise validators.ValidationError('Please use a different email address.')
+
+class EditProfileForm(FlaskForm):
+    '''class to create the profile edit form'''
+    username = StringField('Username', validators=[validators.DataRequired()])
+    about_me = TextAreaField('About me', validators=[validators.Length(min=0, max=140)])
+    submit = SubmitField('Submit')
+    
