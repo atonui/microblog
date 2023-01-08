@@ -1,5 +1,6 @@
 '''this script models the database at a high level using classes'''
 from datetime import datetime
+from hashlib import md5
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login
@@ -15,6 +16,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index = True, unique = True)
     password_hash = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    about_me = db.Column(db.String(140))
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -26,6 +29,11 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         '''function to check hashed password and return a true or false'''
         return check_password_hash(self.password_hash, password)
+
+    def avatar(self, size):
+        '''user avatar generator (instead of letting users upload their images'''
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        return 'https:www.gravatar.com/avatar/{}?d=identicons&s={}'.format(digest, size)
 
 class Post(db.Model):
     '''class to model posts in the database'''
