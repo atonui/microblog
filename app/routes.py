@@ -37,13 +37,6 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-<<<<<<< HEAD
-        flash('Login requested for user {}, remember_me={}'.format(
-            form.username.data, form.remember_me.data
-        ))
-        return redirect('/index')
-    return render_template('login.html', title='Sign In', form = form)
-=======
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
@@ -90,7 +83,7 @@ def user(username):
 @login_required
 def edit_profile():
     '''function to capture and process data from the profile edit form'''
-    form = EditProfileForm()
+    form = EditProfileForm(current_user.username)
     if form.validate_on_submit():
         current_user.username = form.username.data
         current_user.about_me = form.about_me.data
@@ -101,5 +94,4 @@ def edit_profile():
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile', form = form)
->>>>>>> a76e76b9ae2a3aecd132cc1c9b78d6c490569ffa
     
